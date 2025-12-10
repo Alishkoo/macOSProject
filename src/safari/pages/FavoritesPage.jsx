@@ -1,33 +1,25 @@
-import { useState, useEffect } from "react";
-import { getFavorites } from "../services/favorites.service";
+import { useCallback, useMemo } from "react";
+import useFavorites from "../hooks/useFavorites";
 import MovieCard from "../components/MovieCard";
 
 const FavoritesPage = () => {
-  const [favorites, setFavorites] = useState([]);
+  // Use custom hook for favorites
+  const { favorites, refreshFavorites } = useFavorites();
 
-  useEffect(() => {
-    const loadFavorites = () => {
-      const favs = getFavorites();
-      setFavorites(favs);
-    };
+  // useCallback for card callback
+  const handleFavoriteChange = useCallback(() => {
+    refreshFavorites();
+  }, [refreshFavorites]);
 
-    loadFavorites();
-
-    // Listen for storage changes to update when favorites change
-    const handleStorageChange = () => {
-      loadFavorites();
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-
-    // Custom event for same-page updates
-    window.addEventListener("favoritesChanged", handleStorageChange);
-
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-      window.removeEventListener("favoritesChanged", handleStorageChange);
-    };
-  }, []);
+  // useMemo for favorites count message
+  const message = useMemo(() => {
+    if (favorites.length === 0) {
+      return "No favorites yet. Start adding movies you love!";
+    }
+    return `You have ${favorites.length} favorite movie${
+      favorites.length > 1 ? "s" : ""
+    }`;
+  }, [favorites.length]);
 
   return (
     <div className="min-h-full bg-gray-50">
@@ -37,13 +29,7 @@ const FavoritesPage = () => {
           <h1 className="text-3xl font-bold text-gray-900 font-georama mb-2">
             My Favorites
           </h1>
-          <p className="text-gray-600 font-roboto">
-            {favorites.length > 0
-              ? `You have ${favorites.length} favorite movie${
-                  favorites.length > 1 ? "s" : ""
-                }`
-              : "No favorites yet. Start adding movies you love!"}
-          </p>
+          <p className="text-gray-600 font-roboto">{message}</p>
         </div>
 
         {/* Movies Grid */}
@@ -53,10 +39,7 @@ const FavoritesPage = () => {
               <MovieCard
                 key={movie.id}
                 movie={movie}
-                onFavoriteChange={() => {
-                  // Reload favorites when one is removed
-                  setFavorites(getFavorites());
-                }}
+                onFavoriteChange={handleFavoriteChange}
               />
             ))}
           </div>

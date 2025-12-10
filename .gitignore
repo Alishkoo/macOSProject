@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+
+HOOKS_DOCUMENTATION.md
+PROFILE_PICTURE_DOCUMENTATION.md

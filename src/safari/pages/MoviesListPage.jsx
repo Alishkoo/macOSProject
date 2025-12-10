@@ -1,34 +1,36 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Search, Filter, Loader } from "lucide-react";
-import {
-  searchMovies,
-  discoverMovies,
-  getGenres,
-} from "../services/tmdb.service";
+import { getGenres } from "../services/tmdb.service";
 import useDebounce from "../hooks/useDebounce";
+import useMovies from "../hooks/useMovies";
 import MovieCard from "../components/MovieCard";
 
 const MoviesListPage = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [movies, setMovies] = useState([]);
   const [genres, setGenres] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [totalPages, setTotalPages] = useState(0);
 
+  // Get URL params
   const searchQuery = searchParams.get("search") || "";
   const genreFilter = searchParams.get("genre") || "";
   const sortBy = searchParams.get("sort") || "popularity.desc";
   const yearFilter = searchParams.get("year") || "";
   const page = parseInt(searchParams.get("page") || "1");
-  const limit = parseInt(searchParams.get("limit") || "10");
 
   // Local state for inputs
   const [searchInput, setSearchInput] = useState(searchQuery);
   const debouncedSearch = useDebounce(searchInput, 500);
+
+  // Use custom hook for movies fetching
+  const { movies, loading, error, totalPages } = useMovies({
+    search: debouncedSearch,
+    genre: genreFilter,
+    sortBy,
+    year: yearFilter,
+    page,
+  });
 
   // Load genres on mount
   useEffect(() => {
@@ -43,62 +45,35 @@ const MoviesListPage = () => {
     loadGenres();
   }, []);
 
-  // Fetch movies when params change
-  useEffect(() => {
-    const fetchMovies = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        let data;
-        if (debouncedSearch) {
-          // Use search API
-          data = await searchMovies(debouncedSearch, page);
-        } else {
-          // Use discover API with filters
-          data = await discoverMovies({
-            page,
-            sort_by: sortBy,
-            with_genres: genreFilter,
-            primary_release_year: yearFilter,
-          });
-        }
-
-        setMovies(data.results || []);
-        setTotalPages(data.total_pages || 0);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMovies();
-  }, [debouncedSearch, genreFilter, sortBy, yearFilter, page]);
-
-  const handleSearchChange = (e) => {
+  // useCallback for event handlers to prevent re-renders
+  const handleSearchChange = useCallback((e) => {
     setSearchInput(e.target.value);
-  };
+  }, []);
 
-  const handleFilterChange = (key, value) => {
-    const newParams = new URLSearchParams(searchParams);
+  const handleFilterChange = useCallback(
+    (key, value) => {
+      const newParams = new URLSearchParams(searchParams);
 
-    if (value) {
-      newParams.set(key, value);
-    } else {
-      newParams.delete(key);
-    }
+      if (value) {
+        newParams.set(key, value);
+      } else {
+        newParams.delete(key);
+      }
 
-    newParams.set("page", "1");
+      newParams.set("page", "1");
+      setSearchParams(newParams);
+    },
+    [searchParams, setSearchParams]
+  );
 
-    setSearchParams(newParams);
-  };
-
-  const handlePageChange = (newPage) => {
-    const newParams = new URLSearchParams(searchParams);
-    newParams.set("page", newPage.toString());
-    setSearchParams(newParams);
-  };
+  const handlePageChange = useCallback(
+    (newPage) => {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.set("page", newPage.toString());
+      setSearchParams(newParams);
+    },
+    [searchParams, setSearchParams]
+  );
 
   // Sync debounced search with URL
   useEffect(() => {
@@ -116,10 +91,19 @@ const MoviesListPage = () => {
     }
 
     setSearchParams(newParams, { replace: true });
-  }, [debouncedSearch]);
+  }, [debouncedSearch, searchQuery, searchParams, setSearchParams]);
 
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 20 }, (_, i) => currentYear - i);
+  // useMemo for years array - prevent recalculation on every render
+  const years = useMemo(() => {
+    const currentYear = new Date().getFullYear();
+    return Array.from({ length: 20 }, (_, i) => currentYear - i);
+  }, []);
+
+  // useMemo for limited movies - prevent slice on every render
+  const displayedMovies = useMemo(() => {
+    const limit = 10;
+    return movies.slice(0, limit);
+  }, [movies]);
 
   return (
     <div className="min-h-full bg-gray-50">
@@ -230,7 +214,7 @@ const MoviesListPage = () => {
         {!loading && !error && (
           <>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
-              {movies.slice(0, limit).map((movie) => (
+              {displayedMovies.map((movie) => (
                 <MovieCard key={movie.id} movie={movie} />
               ))}
             </div>
@@ -262,8 +246,7 @@ const MoviesListPage = () => {
 
             {/* Results Info */}
             <div className="text-center text-gray-600 font-roboto mt-4">
-              Showing {Math.min(limit, movies.length)} of {movies.length}{" "}
-              results
+              Showing {displayedMovies.length} of {movies.length} results
             </div>
           </>
         )}
