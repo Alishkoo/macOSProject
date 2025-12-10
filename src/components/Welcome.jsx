@@ -79,7 +79,7 @@ const Welcome = () => {
         {renderText("Hey! I am Alibek", "text-3xl font-georama", 100)}
       </p>
       <h1 ref={titleRef} className="mt-7">
-        {renderText("Project", "text-5xl italic font-georama")}
+        {renderText("Endterm", "text-5xl italic font-georama")}
       </h1>
 
       <div className="small-screen">
