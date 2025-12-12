@@ -1,11 +1,5 @@
 import { Navbar, Welcome, Dock, LockScreen } from "#components";
-import {
-  TerminalWindow,
-  SafariWindow,
-  FinderWindow,
-  GalleryWindow,
-  ContactWindow,
-} from "#windows";
+import { TerminalWindow, SafariWindow } from "#windows";
 import OfflineIndicator from "./components/OfflineIndicator.jsx";
 import { useEffect } from "react";
 import useAuthStore from "./store/auth.js";
@@ -38,9 +32,6 @@ const App = () => {
       <Welcome></Welcome>
       <Dock></Dock>
 
-      <FinderWindow></FinderWindow>
-      <GalleryWindow></GalleryWindow>
-      <ContactWindow></ContactWindow>
       <TerminalWindow></TerminalWindow>
       <SafariWindow></SafariWindow>
     </main>
