@@ -1,6 +1,6 @@
 const FAVORITES_KEY = "tmdb_favorites";
 
-// Get all favorites
+
 export const getFavorites = () => {
   try {
     const favorites = localStorage.getItem(FAVORITES_KEY);
@@ -11,7 +11,7 @@ export const getFavorites = () => {
   }
 };
 
-// Add to favorites
+
 export const addToFavorites = (movie) => {
   try {
     const favorites = getFavorites();
@@ -29,7 +29,7 @@ export const addToFavorites = (movie) => {
   }
 };
 
-// Remove from favorites
+
 export const removeFromFavorites = (movieId) => {
   try {
     const favorites = getFavorites();
@@ -42,13 +42,13 @@ export const removeFromFavorites = (movieId) => {
   }
 };
 
-// Check if movie is in favorites
+
 export const isFavorite = (movieId) => {
   const favorites = getFavorites();
   return favorites.some((fav) => fav.id === movieId);
 };
 
-// Clear all favorites
+
 export const clearFavorites = () => {
   try {
     localStorage.removeItem(FAVORITES_KEY);

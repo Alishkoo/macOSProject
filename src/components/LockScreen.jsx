@@ -5,7 +5,7 @@ import useAuthStore from "../store/auth.js";
 import { User, Lock, Mail } from "lucide-react";
 
 const LockScreen = () => {
-  const { signIn, signUp, error, clearError } = useAuthStore();
+  const { signIn, signUp, signInAsGuest, error, clearError } = useAuthStore();
   const [isSignUp, setIsSignUp] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -132,6 +132,24 @@ const LockScreen = () => {
     clearError();
   };
 
+  const handleGuestLogin = async () => {
+    setIsLoading(true);
+
+    try {
+      const result = await signInAsGuest();
+      if (result.success) {
+        gsap.to(lockScreenRef.current, {
+          opacity: 0,
+          scale: 1.1,
+          duration: 0.8,
+          ease: "power2.in",
+        });
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div
       ref={lockScreenRef}
@@ -243,6 +261,24 @@ const LockScreen = () => {
             {isLoading ? "Loading..." : isSignUp ? "Sign Up" : "Sign In"}
           </button>
         </form>
+
+        <div className="mt-4">
+          <div className="relative flex items-center justify-center">
+            <div className="border-t border-white/20 w-full absolute"></div>
+            <span className="bg-white/10 px-3 text-gray-400 text-sm relative">
+              OR
+            </span>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleGuestLogin}
+          disabled={isLoading}
+          className="w-full mt-4 bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold py-3 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isLoading ? "Loading..." : "Continue as Guest"}
+        </button>
 
         <div className="mt-6 text-center">
           <p className="text-gray-300 text-sm">
