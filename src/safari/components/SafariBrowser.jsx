@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import { Home, ChevronLeft, ChevronRight, Lock } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 // Pages
 import HomePage from "../pages/HomePage";
@@ -18,6 +19,7 @@ import FavoritesPage from "../pages/FavoritesPage";
 const BrowserChrome = () => {
   const location = useLocation();
   const [url, setUrl] = useState("");
+  const { t } = useTranslation();
 
   // Update fake URL based on current route
   const getFakeUrl = () => {
@@ -54,9 +56,9 @@ const BrowserChrome = () => {
 
       {/* Navigation Tabs */}
       <div className="flex gap-1 px-3 pb-2">
-        <NavLink to="/">Home</NavLink>
-        <NavLink to="/movies">Movies</NavLink>
-        <NavLink to="/favorites">Favorites</NavLink>
+        <NavLink to="/">{t("safari.tabs.home")}</NavLink>
+        <NavLink to="/movies">{t("safari.tabs.movies")}</NavLink>
+        <NavLink to="/favorites">{t("safari.tabs.favorites")}</NavLink>
       </div>
     </div>
   );

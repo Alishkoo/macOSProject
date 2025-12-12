@@ -25,17 +25,16 @@ const tmdbFetch = async (endpoint, params = {}) => {
   return response.json();
 };
 
-// Get popular movies
+
 export const getPopularMovies = async (page = 1) => {
   return tmdbFetch("/movie/popular", { page });
 };
 
-// Search movies
+
 export const searchMovies = async (query, page = 1) => {
   return tmdbFetch("/search/movie", { query, page });
 };
 
-// Discover movies with filters
 export const discoverMovies = async ({ 
   page = 1, 
   sort_by = "popularity.desc",
@@ -53,28 +52,27 @@ export const discoverMovies = async ({
   return tmdbFetch("/discover/movie", params);
 };
 
-// Get movie details
+
 export const getMovieDetails = async (movieId) => {
   return tmdbFetch(`/movie/${movieId}`);
 };
 
-// Get movie credits (cast)
 export const getMovieCredits = async (movieId) => {
   return tmdbFetch(`/movie/${movieId}/credits`);
 };
 
-// Get genres list
+
 export const getGenres = async () => {
   return tmdbFetch("/genre/movie/list");
 };
 
-// Helper: Get poster URL
+
 export const getPosterUrl = (path, size = "w500") => {
   if (!path) return "/images/no-poster.png";
   return `${TMDB_IMAGE_BASE_URL}/${size}${path}`;
 };
 
-// Helper: Get backdrop URL
+
 export const getBackdropUrl = (path, size = "w1280") => {
   if (!path) return "/images/no-backdrop.png";
   return `${TMDB_IMAGE_BASE_URL}/${size}${path}`;

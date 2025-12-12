@@ -2,10 +2,12 @@ import { useState, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import useAuthStore from "../store/auth.js";
+import { useTranslation } from "react-i18next";
 import { User, Lock, Mail } from "lucide-react";
 
 const LockScreen = () => {
-  const { signIn, signUp, error, clearError } = useAuthStore();
+  const { t } = useTranslation();
+  const { signIn, signUp, signInAsGuest, error, clearError } = useAuthStore();
   const [isSignUp, setIsSignUp] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -67,13 +69,13 @@ const LockScreen = () => {
     const errors = {};
 
     if (!formData.email) {
-      errors.email = "Email is required";
+      errors.email = t("errors.emailRequired");
     } else if (!validateEmail(formData.email)) {
-      errors.email = "Invalid email format";
+      errors.email = t("errors.invalidEmail");
     }
 
     if (!formData.password) {
-      errors.password = "Password is required";
+      errors.password = t("errors.passwordRequired");
     } else if (isSignUp) {
       const passwordCheck = validatePassword(formData.password);
       if (!passwordCheck.isValid) {
@@ -81,15 +83,15 @@ const LockScreen = () => {
         if (!passwordCheck.minLength) issues.push("at least 8 characters");
         if (!passwordCheck.hasSpecialChar) issues.push("one special character");
         if (!passwordCheck.hasNumber) issues.push("one number");
-        errors.password = `Password must contain ${issues.join(", ")}`;
+        errors.password = t("errors.passwordWeak");
       }
     }
 
     if (isSignUp) {
       if (!formData.repeatPassword) {
-        errors.repeatPassword = "Please confirm your password";
+        errors.repeatPassword = t("errors.confirmPassword");
       } else if (formData.password !== formData.repeatPassword) {
-        errors.repeatPassword = "Passwords do not match";
+        errors.repeatPassword = t("errors.passwordsDontMatch");
       }
     }
 
@@ -132,6 +134,24 @@ const LockScreen = () => {
     clearError();
   };
 
+  const handleGuestLogin = async () => {
+    setIsLoading(true);
+
+    try {
+      const result = await signInAsGuest();
+      if (result.success) {
+        gsap.to(lockScreenRef.current, {
+          opacity: 0,
+          scale: 1.1,
+          duration: 0.8,
+          ease: "power2.in",
+        });
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div
       ref={lockScreenRef}
@@ -152,12 +172,10 @@ const LockScreen = () => {
         </div>
 
         <h2 className="text-center text-white text-2xl font-semibold mb-2 font-georama">
-          {isSignUp ? "Create Account" : "Welcome Back"}
+          {isSignUp ? t("auth.createAccount") : t("auth.welcomeBack")}
         </h2>
         <p className="text-center text-gray-300 text-sm mb-6 font-roboto">
-          {isSignUp
-            ? "Sign up to access your workspace"
-            : "Sign in to continue"}
+          {isSignUp ? t("auth.signUpMessage") : t("auth.signInMessage")}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -172,7 +190,7 @@ const LockScreen = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                placeholder="Email"
+                placeholder={t("auth.email")}
                 className="w-full bg-white/10 border border-white/20 rounded-xl px-10 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 transition-colors"
               />
             </div>
@@ -194,7 +212,7 @@ const LockScreen = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                placeholder="Password"
+                placeholder={t("auth.password")}
                 className="w-full bg-white/10 border border-white/20 rounded-xl px-10 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 transition-colors"
               />
             </div>
@@ -217,7 +235,7 @@ const LockScreen = () => {
                   name="repeatPassword"
                   value={formData.repeatPassword}
                   onChange={handleInputChange}
-                  placeholder="Repeat Password"
+                  placeholder={t("auth.repeatPassword")}
                   className="w-full bg-white/10 border border-white/20 rounded-xl px-10 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 transition-colors"
                 />
               </div>
@@ -240,19 +258,43 @@ const LockScreen = () => {
             disabled={isLoading}
             className="w-full bg-linear-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLoading ? "Loading..." : isSignUp ? "Sign Up" : "Sign In"}
+            {isLoading
+              ? t("auth.loading")
+              : isSignUp
+              ? t("auth.signUp")
+              : t("auth.signIn")}
           </button>
         </form>
 
+        <div className="mt-4">
+          <div className="relative flex items-center justify-center">
+            <div className="border-t border-white/20 w-full absolute"></div>
+            <span className="bg-white/10 px-3 text-gray-400 text-sm relative">
+              OR
+            </span>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleGuestLogin}
+          disabled={isLoading}
+          className="w-full mt-4 bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold py-3 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isLoading ? t("auth.loading") : t("auth.guest")}
+        </button>
+
         <div className="mt-6 text-center">
           <p className="text-gray-300 text-sm">
-            {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
+            {isSignUp
+              ? t("auth.alreadyHaveAccount")
+              : t("auth.dontHaveAccount")}{" "}
             <button
               type="button"
               onClick={toggleMode}
               className="text-blue-400 hover:text-blue-300 font-semibold transition-colors"
             >
-              {isSignUp ? "Sign In" : "Sign Up"}
+              {isSignUp ? t("auth.signIn") : t("auth.signUp")}
             </button>
           </p>
         </div>

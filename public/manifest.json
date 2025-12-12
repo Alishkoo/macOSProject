@@ -1,0 +1,37 @@
+{
+  "name": "Alibek's macOS Portfolio",
+  "short_name": "Portfolio",
+  "description": "Interactive macOS-style portfolio with movie browser",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#007AFF",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/images/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/logo.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/images/logo.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["entertainment", "portfolio"],
+  "screenshots": [
+    {
+      "src": "/images/logo.svg",
+      "sizes": "1280x720",
+      "type": "image/svg+xml",
+      "form_factor": "wide"
+    }
+  ]
+}

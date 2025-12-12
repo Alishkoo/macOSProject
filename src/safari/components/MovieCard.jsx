@@ -10,25 +10,38 @@ import { useState, useEffect } from "react";
 
 const MovieCard = ({ movie, onFavoriteChange }) => {
   const navigate = useNavigate();
-  const [favorite, setFavorite] = useState(isFavorite(movie.id));
+  const [favorite, setFavorite] = useState(false);
+  const [checking, setChecking] = useState(true);
+
+  // Check favorite status on mount
+  useEffect(() => {
+    const checkFavoriteStatus = async () => {
+      const isFav = await isFavorite(movie.id);
+      setFavorite(isFav);
+      setChecking(false);
+    };
+    checkFavoriteStatus();
+  }, [movie.id]);
 
   // Update favorite state when storage changes
   useEffect(() => {
-    const checkFavorite = () => {
-      setFavorite(isFavorite(movie.id));
+    const checkFavorite = async () => {
+      const isFav = await isFavorite(movie.id);
+      setFavorite(isFav);
     };
 
     window.addEventListener("favoritesChanged", checkFavorite);
     return () => window.removeEventListener("favoritesChanged", checkFavorite);
   }, [movie.id]);
 
-  const handleFavoriteClick = (e) => {
+  const handleFavoriteClick = async (e) => {
     e.stopPropagation();
+
     if (favorite) {
-      removeFromFavorites(movie.id);
+      await removeFromFavorites(movie.id);
       setFavorite(false);
     } else {
-      addToFavorites(movie);
+      await addToFavorites(movie);
       setFavorite(true);
     }
 

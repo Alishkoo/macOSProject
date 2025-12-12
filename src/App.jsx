@@ -1,5 +1,12 @@
 import { Navbar, Welcome, Dock, LockScreen } from "#components";
-import { TerminalWindow, SafariWindow } from "#windows";
+import {
+  TerminalWindow,
+  SafariWindow,
+  FinderWindow,
+  GalleryWindow,
+  ContactWindow,
+} from "#windows";
+import OfflineIndicator from "./components/OfflineIndicator.jsx";
 import { useEffect } from "react";
 import useAuthStore from "./store/auth.js";
 import gsap from "gsap";
@@ -14,7 +21,6 @@ const App = () => {
     initializeAuth();
   }, [initializeAuth]);
 
-  // Show loading state while checking auth
   if (loading) {
     return (
       <main className="flex items-center justify-center">
@@ -26,11 +32,15 @@ const App = () => {
   return (
     <main>
       {!user && <LockScreen />}
+      <OfflineIndicator />
 
       <Navbar></Navbar>
       <Welcome></Welcome>
       <Dock></Dock>
 
+      <FinderWindow></FinderWindow>
+      <GalleryWindow></GalleryWindow>
+      <ContactWindow></ContactWindow>
       <TerminalWindow></TerminalWindow>
       <SafariWindow></SafariWindow>
     </main>

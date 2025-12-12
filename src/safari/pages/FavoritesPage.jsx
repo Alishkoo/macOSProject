@@ -1,33 +1,27 @@
-import { useState, useEffect } from "react";
-import { getFavorites } from "../services/favorites.service";
+import { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import useFavorites from "../hooks/useFavorites";
 import MovieCard from "../components/MovieCard";
 
 const FavoritesPage = () => {
-  const [favorites, setFavorites] = useState([]);
+  const { t } = useTranslation();
+  // Use custom hook for favorites
+  const { favorites, refreshFavorites } = useFavorites();
 
-  useEffect(() => {
-    const loadFavorites = () => {
-      const favs = getFavorites();
-      setFavorites(favs);
-    };
+  // useCallback for card callback
+  const handleFavoriteChange = useCallback(() => {
+    refreshFavorites();
+  }, [refreshFavorites]);
 
-    loadFavorites();
-
-    // Listen for storage changes to update when favorites change
-    const handleStorageChange = () => {
-      loadFavorites();
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-
-    // Custom event for same-page updates
-    window.addEventListener("favoritesChanged", handleStorageChange);
-
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-      window.removeEventListener("favoritesChanged", handleStorageChange);
-    };
-  }, []);
+  // useMemo for favorites count message
+  const message = useMemo(() => {
+    if (favorites.length === 0) {
+      return t("safari.favoritesPage.noFavorites");
+    }
+    return favorites.length === 1
+      ? t("safari.favoritesPage.count", { count: favorites.length })
+      : t("safari.favoritesPage.countPlural", { count: favorites.length });
+  }, [favorites.length, t]);
 
   return (
     <div className="min-h-full bg-gray-50">
@@ -35,15 +29,9 @@ const FavoritesPage = () => {
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900 font-georama mb-2">
-            My Favorites
+            {t("safari.favoritesPage.title")}
           </h1>
-          <p className="text-gray-600 font-roboto">
-            {favorites.length > 0
-              ? `You have ${favorites.length} favorite movie${
-                  favorites.length > 1 ? "s" : ""
-                }`
-              : "No favorites yet. Start adding movies you love!"}
-          </p>
+          <p className="text-gray-600 font-roboto">{message}</p>
         </div>
 
         {/* Movies Grid */}
@@ -53,17 +41,14 @@ const FavoritesPage = () => {
               <MovieCard
                 key={movie.id}
                 movie={movie}
-                onFavoriteChange={() => {
-                  // Reload favorites when one is removed
-                  setFavorites(getFavorites());
-                }}
+                onFavoriteChange={handleFavoriteChange}
               />
             ))}
           </div>
         ) : (
           <div className="bg-white rounded-lg shadow-md p-12 text-center">
             <p className="text-gray-500 text-lg font-roboto">
-              Start exploring movies and add them to your favorites!
+              {t("safari.favoritesPage.emptyState")}
             </p>
           </div>
         )}

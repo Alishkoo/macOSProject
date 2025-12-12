@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Star,
   Calendar,
@@ -15,11 +15,7 @@ import {
   getBackdropUrl,
   getPosterUrl,
 } from "../services/tmdb.service";
-import {
-  isFavorite,
-  addToFavorites,
-  removeFromFavorites,
-} from "../services/favorites.service";
+import useFavorites from "../hooks/useFavorites";
 
 const MovieDetailsPage = () => {
   const { id } = useParams();
@@ -29,7 +25,9 @@ const MovieDetailsPage = () => {
   const [credits, setCredits] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [favorite, setFavorite] = useState(false);
+
+  // Use custom hook for favorites
+  const { isFav, toggleFavorite } = useFavorites(parseInt(id));
 
   useEffect(() => {
     const fetchMovieData = async () => {
@@ -44,7 +42,6 @@ const MovieDetailsPage = () => {
 
         setMovie(movieData);
         setCredits(creditsData);
-        setFavorite(isFavorite(movieData.id));
       } catch (err) {
         setError(err.message);
       } finally {
@@ -55,20 +52,27 @@ const MovieDetailsPage = () => {
     fetchMovieData();
   }, [id]);
 
-  const handleFavoriteClick = () => {
-    if (favorite) {
-      removeFromFavorites(movie.id);
-      setFavorite(false);
-    } else {
-      addToFavorites(movie);
-      setFavorite(true);
+  // useCallback for handlers
+  const handleFavoriteClick = useCallback(() => {
+    if (movie) {
+      toggleFavorite(movie);
     }
-    window.dispatchEvent(new Event("favoritesChanged"));
-  };
+  }, [movie, toggleFavorite]);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     navigate(-1);
-  };
+  }, [navigate]);
+
+  // useMemo for expensive calculations
+  const cast = useMemo(() => {
+    return credits?.cast?.slice(0, 10) || [];
+  }, [credits]);
+
+  const formatRuntime = useCallback((minutes) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}h ${mins}m`;
+  }, []);
 
   if (loading) {
     return (
@@ -89,16 +93,6 @@ const MovieDetailsPage = () => {
   }
 
   if (!movie) return null;
-
-  // Get top 10 cast members
-  const cast = credits?.cast?.slice(0, 10) || [];
-
-  // Format runtime
-  const formatRuntime = (minutes) => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return `${hours}h ${mins}m`;
-  };
 
   return (
     <div className="min-h-full bg-gray-50">
@@ -124,12 +118,12 @@ const MovieDetailsPage = () => {
         <button
           onClick={handleFavoriteClick}
           className={`absolute top-4 right-4 p-3 rounded-full transition-colors ${
-            favorite
+            isFav
               ? "bg-pink-500 text-white"
               : "bg-black/50 text-white hover:bg-pink-500"
           }`}
         >
-          <Heart size={20} fill={favorite ? "currentColor" : "none"} />
+          <Heart size={20} fill={isFav ? "currentColor" : "none"} />
         </button>
       </div>
 
