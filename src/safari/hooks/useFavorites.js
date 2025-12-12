@@ -6,18 +6,7 @@ import {
   isFavorite,
 } from "../services/favorites.service";
 
-/**
- * Custom hook for managing favorite movies
- * 
- * Features:
- * - Tracks favorite state for a specific movie
- * - Listens to storage changes (cross-tab sync)
- * - Provides toggle function with useCallback
- * - Returns all favorites list
- * 
- * @param {number} movieId - Optional movie ID to track favorite state
- * @returns {Object} - { isFav, toggleFavorite, favorites, refreshFavorites }
- */
+
 const useFavorites = (movieId = null) => {
   const [favorites, setFavorites] = useState([]);
   const [isFav, setIsFav] = useState(false);
