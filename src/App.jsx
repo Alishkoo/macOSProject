@@ -14,7 +14,6 @@ const App = () => {
     initializeAuth();
   }, [initializeAuth]);
 
-  // Show loading state while checking auth
   if (loading) {
     return (
       <main className="flex items-center justify-center">

@@ -2,15 +2,33 @@ import { navLinks } from "#constants";
 import { navIcons } from "#constants";
 import useAuthStore from "../store/auth.js";
 import useProfilePicture from "../hooks/useProfilePicture.js";
-import { LogOut, User, Upload, Loader } from "lucide-react";
-import { useRef } from "react";
+import { LogOut, User, Upload, Loader, Database } from "lucide-react";
+import { useRef, useState, useEffect } from "react";
 import dayjs from "dayjs";
+import {
+  getLocalStorageFavorites,
+  clearLocalStorageFavorites,
+} from "../safari/services/favorites.service.js";
+import { mergeLocalFavoritesToFirestore } from "../services/firestoreFavorites.service.js";
 
 const Navbar = () => {
   const { user, logout } = useAuthStore();
   const { photoURL, uploading, error, uploadProfilePicture } =
     useProfilePicture(user?.uid);
   const fileInputRef = useRef(null);
+  const [hasLocalFavorites, setHasLocalFavorites] = useState(false);
+  const [merging, setMerging] = useState(false);
+  const [mergeMessage, setMergeMessage] = useState("");
+
+  // Check if there are local favorites to merge
+  useEffect(() => {
+    if (user && !user.isAnonymous) {
+      const localFavs = getLocalStorageFavorites();
+      setHasLocalFavorites(localFavs.length > 0);
+    } else {
+      setHasLocalFavorites(false);
+    }
+  }, [user]);
 
   const handleLogout = async () => {
     await logout();
@@ -26,6 +44,47 @@ const Navbar = () => {
       await uploadProfilePicture(file);
       // Reset input
       e.target.value = "";
+    }
+  };
+
+  const handleMergeFavorites = async () => {
+    if (!user || user.isAnonymous) return;
+
+    setMerging(true);
+    setMergeMessage("");
+
+    try {
+      const localFavorites = getLocalStorageFavorites();
+      const result = await mergeLocalFavoritesToFirestore(
+        user.uid,
+        localFavorites
+      );
+
+      if (result.success) {
+        // Clear localStorage after successful merge
+        clearLocalStorageFavorites();
+        setHasLocalFavorites(false);
+        setMergeMessage(
+          result.merged > 0
+            ? `✓ ${result.merged} favorites merged!`
+            : "No new favorites to merge"
+        );
+
+        // Dispatch event to refresh favorites list
+        window.dispatchEvent(new Event("favoritesChanged"));
+
+        // Clear message after 3 seconds
+        setTimeout(() => setMergeMessage(""), 3000);
+      } else {
+        setMergeMessage("✗ Merge failed. Please try again.");
+        setTimeout(() => setMergeMessage(""), 3000);
+      }
+    } catch (error) {
+      console.error("Error merging favorites:", error);
+      setMergeMessage("✗ Error merging favorites");
+      setTimeout(() => setMergeMessage(""), 3000);
+    } finally {
+      setMerging(false);
     }
   };
 
@@ -102,6 +161,40 @@ const Navbar = () => {
                   <div className="px-3 py-2 text-xs text-red-600 bg-red-50 rounded mt-1">
                     {error}
                   </div>
+                )}
+
+                {/* Merge Message */}
+                {mergeMessage && (
+                  <div
+                    className={`px-3 py-2 text-xs rounded mt-1 ${
+                      mergeMessage.includes("✓")
+                        ? "text-green-600 bg-green-50"
+                        : "text-red-600 bg-red-50"
+                    }`}
+                  >
+                    {mergeMessage}
+                  </div>
+                )}
+
+                {/* Merge Favorites Button (only if local favorites exist) */}
+                {hasLocalFavorites && (
+                  <button
+                    onClick={handleMergeFavorites}
+                    disabled={merging}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-purple-600 hover:bg-purple-50 rounded transition-colors mt-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {merging ? (
+                      <>
+                        <Loader size={14} className="animate-spin" />
+                        Merging...
+                      </>
+                    ) : (
+                      <>
+                        <Database size={14} />
+                        Merge Favourites
+                      </>
+                    )}
+                  </button>
                 )}
 
                 {/* Logout Button */}

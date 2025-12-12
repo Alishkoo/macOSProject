@@ -23,12 +23,13 @@ const useFavorites = (movieId = null) => {
   const [isFav, setIsFav] = useState(false);
 
   // Load favorites on mount
-  const refreshFavorites = useCallback(() => {
-    const favs = getFavorites();
+  const refreshFavorites = useCallback(async () => {
+    const favs = await getFavorites();
     setFavorites(favs);
     
     if (movieId) {
-      setIsFav(isFavorite(movieId));
+      const isFav = await isFavorite(movieId);
+      setIsFav(isFav);
     }
   }, [movieId]);
 
@@ -54,15 +55,17 @@ const useFavorites = (movieId = null) => {
 
   // Toggle favorite with useCallback to prevent re-renders
   const toggleFavorite = useCallback(
-    (movie) => {
+    async (movie) => {
       if (!movie) return false;
 
       let success = false;
-      if (isFavorite(movie.id)) {
-        success = removeFromFavorites(movie.id);
+      const currentlyFav = await isFavorite(movie.id);
+      
+      if (currentlyFav) {
+        success = await removeFromFavorites(movie.id);
         setIsFav(false);
       } else {
-        success = addToFavorites(movie);
+        success = await addToFavorites(movie);
         setIsFav(true);
       }
 
