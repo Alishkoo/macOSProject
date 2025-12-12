@@ -1,8 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { Film, Star, Heart } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <div className="min-h-full bg-linear-to-br from-blue-50 to-purple-50">
@@ -10,11 +12,10 @@ const HomePage = () => {
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold font-georama text-gray-900 mb-4">
-            Welcome to TMDB Movies
+            {t("safari.home.hero.title")}
           </h1>
           <p className="text-xl text-gray-600 font-roboto">
-            Discover millions of movies, explore details, and save your
-            favorites
+            {t("safari.home.hero.subtitle")}
           </p>
         </div>
 
@@ -25,11 +26,10 @@ const HomePage = () => {
               <Film className="text-blue-600" size={24} />
             </div>
             <h3 className="text-xl font-semibold mb-2 font-georama">
-              Explore Movies
+              {t("safari.home.features.explore.title")}
             </h3>
             <p className="text-gray-600 font-roboto">
-              Browse thousands of movies with detailed information, ratings, and
-              reviews
+              {t("safari.home.features.explore.description")}
             </p>
           </div>
 
@@ -38,11 +38,10 @@ const HomePage = () => {
               <Star className="text-purple-600" size={24} />
             </div>
             <h3 className="text-xl font-semibold mb-2 font-georama">
-              Filter & Search
+              {t("safari.home.features.filter.title")}
             </h3>
             <p className="text-gray-600 font-roboto">
-              Find exactly what you're looking for with advanced filters and
-              search
+              {t("safari.home.features.filter.description")}
             </p>
           </div>
 
@@ -51,10 +50,10 @@ const HomePage = () => {
               <Heart className="text-pink-600" size={24} />
             </div>
             <h3 className="text-xl font-semibold mb-2 font-georama">
-              Save Favorites
+              {t("safari.home.features.favorites.title")}
             </h3>
             <p className="text-gray-600 font-roboto">
-              Create your personal collection of favorite movies to watch later
+              {t("safari.home.features.favorites.description")}
             </p>
           </div>
         </div>
@@ -65,19 +64,17 @@ const HomePage = () => {
             onClick={() => navigate("/movies")}
             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-xl text-lg transition-colors shadow-lg hover:shadow-xl"
           >
-            Start Exploring Movies
+            {t("safari.home.cta")}
           </button>
         </div>
 
         {/* About Section */}
         <div className="mt-16 bg-white rounded-2xl p-8 shadow-lg">
           <h2 className="text-3xl font-bold mb-4 font-georama text-gray-900">
-            About TMDB Movies
+            {t("safari.home.about.title")}
           </h2>
           <p className="text-gray-600 font-roboto leading-relaxed mb-4">
-            This application is powered by The Movie Database (TMDB) API,
-            providing you with access to a vast collection of movie information
-            including plots, cast, crew, ratings, and more.
+            {t("safari.home.about.description")}
           </p>
           <p className="text-gray-600 font-roboto leading-relaxed">
             Whether you're looking for the latest blockbusters, classic films,

@@ -2,8 +2,16 @@ import { navLinks } from "#constants";
 import { navIcons } from "#constants";
 import useAuthStore from "../store/auth.js";
 import useProfilePicture from "../hooks/useProfilePicture.js";
-import { LogOut, User, Upload, Loader, Database } from "lucide-react";
+import {
+  LogOut,
+  User,
+  Upload,
+  Loader,
+  Database,
+  Languages,
+} from "lucide-react";
 import { useRef, useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
 import {
   getLocalStorageFavorites,
@@ -13,6 +21,7 @@ import { mergeLocalFavoritesToFirestore } from "../services/firestoreFavorites.s
 
 const Navbar = () => {
   const { user, logout } = useAuthStore();
+  const { t, i18n } = useTranslation();
   const { photoURL, uploading, error, uploadProfilePicture } =
     useProfilePicture(user?.uid);
   const fileInputRef = useRef(null);
@@ -20,7 +29,6 @@ const Navbar = () => {
   const [merging, setMerging] = useState(false);
   const [mergeMessage, setMergeMessage] = useState("");
 
-  // Check if there are local favorites to merge
   useEffect(() => {
     if (user && !user.isAnonymous) {
       const localFavs = getLocalStorageFavorites();
@@ -61,7 +69,6 @@ const Navbar = () => {
       );
 
       if (result.success) {
-        // Clear localStorage after successful merge
         clearLocalStorageFavorites();
         setHasLocalFavorites(false);
         setMergeMessage(
@@ -70,10 +77,8 @@ const Navbar = () => {
             : "No new favorites to merge"
         );
 
-        // Dispatch event to refresh favorites list
         window.dispatchEvent(new Event("favoritesChanged"));
 
-        // Clear message after 3 seconds
         setTimeout(() => setMergeMessage(""), 3000);
       } else {
         setMergeMessage("✗ Merge failed. Please try again.");
@@ -88,16 +93,22 @@ const Navbar = () => {
     }
   };
 
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+  };
+
+  const currentLanguage = i18n.language;
+
   return (
     <nav>
       <div>
         <img src="/images/logo.svg" alt="logo" />
-        <p className="font-bold">Alibek's Project</p>
+        <p className="font-bold">{t("nav.projectTitle")}</p>
 
         <ul>
-          {navLinks.map(({ id, name }) => (
+          {navLinks.map(({ id, translationKey, name }) => (
             <li key={id}>
-              <p>{name}</p>
+              <p>{translationKey ? t(translationKey) : name}</p>
             </li>
           ))}
         </ul>
@@ -131,7 +142,9 @@ const Navbar = () => {
               <div className="absolute right-0 top-full mt-2 bg-white/90 backdrop-blur-md rounded-lg shadow-lg p-2 min-w-[200px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                 {/* User Info */}
                 <div className="px-3 py-2 border-b border-gray-200">
-                  <p className="text-xs text-gray-500">Signed in as</p>
+                  <p className="text-xs text-gray-500">
+                    {t("auth.signedInAs")}
+                  </p>
                   <p className="text-sm font-semibold text-gray-800 truncate">
                     {user.email}
                   </p>
@@ -146,12 +159,12 @@ const Navbar = () => {
                   {uploading ? (
                     <>
                       <Loader size={14} className="animate-spin" />
-                      Uploading...
+                      {t("profile.uploading")}
                     </>
                   ) : (
                     <>
                       <Upload size={14} />
-                      Upload Photo
+                      {t("profile.uploadPhoto")}
                     </>
                   )}
                 </button>
@@ -176,7 +189,6 @@ const Navbar = () => {
                   </div>
                 )}
 
-                {/* Merge Favorites Button (only if local favorites exist) */}
                 {hasLocalFavorites && (
                   <button
                     onClick={handleMergeFavorites}
@@ -186,28 +198,26 @@ const Navbar = () => {
                     {merging ? (
                       <>
                         <Loader size={14} className="animate-spin" />
-                        Merging...
+                        {t("profile.merging")}
                       </>
                     ) : (
                       <>
                         <Database size={14} />
-                        Merge Favourites
+                        {t("profile.mergeFavorites")}
                       </>
                     )}
                   </button>
                 )}
 
-                {/* Logout Button */}
                 <button
                   onClick={handleLogout}
                   className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded transition-colors mt-1"
                 >
                   <LogOut size={14} />
-                  Logout
+                  {t("auth.signOut")}
                 </button>
               </div>
 
-              {/* Hidden File Input */}
               <input
                 ref={fileInputRef}
                 type="file"
@@ -218,6 +228,32 @@ const Navbar = () => {
             </li>
           )}
         </ul>
+
+        <div className="flex items-center gap-2 mr-4">
+          <Languages size={16} className="text-white/70" />
+          <div className="flex gap-1">
+            <button
+              onClick={() => changeLanguage("en")}
+              className={`px-2 py-1 text-xs font-semibold rounded transition-colors ${
+                currentLanguage === "en"
+                  ? "bg-white/20 text-white"
+                  : "text-white/60 hover:text-white hover:bg-white/10"
+              }`}
+            >
+              EN
+            </button>
+            <button
+              onClick={() => changeLanguage("ru")}
+              className={`px-2 py-1 text-xs font-semibold rounded transition-colors ${
+                currentLanguage === "ru"
+                  ? "bg-white/20 text-white"
+                  : "text-white/60 hover:text-white hover:bg-white/10"
+              }`}
+            >
+              RU
+            </button>
+          </div>
+        </div>
 
         <time> {dayjs().format("MMMM D, YYYY")}</time>
       </div>

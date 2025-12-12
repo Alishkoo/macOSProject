@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { useTranslation } from "react-i18next";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 
@@ -61,6 +62,7 @@ const setupTextHover = (container, type) => {
 };
 
 const Welcome = () => {
+  const { t } = useTranslation();
   const titleRef = useRef(null);
   const subtitleRef = useRef(null);
 
@@ -76,15 +78,13 @@ const Welcome = () => {
   return (
     <section id="welcome">
       <p ref={subtitleRef}>
-        {renderText("Hey! I am Alibek", "text-3xl font-georama", 100)}
+        {renderText(t("welcome.greeting"), "text-3xl font-georama", 100)}
       </p>
       <h1 ref={titleRef} className="mt-7">
-        {renderText("Endterm", "text-5xl italic font-georama")}
+        {renderText(t("welcome.title"), "text-5xl italic font-georama")}
       </h1>
 
-      <div className="small-screen">
-        This is designed for large screens! Hello from small screen :)
-      </div>
+      <div className="small-screen">{t("welcome.smallScreen")}</div>
     </section>
   );
 };

@@ -1,15 +1,4 @@
-/**
- * Profile Service (LocalStorage version)
- * Handles profile picture upload with Web Worker compression
- * Stores images as base64 in localStorage
- */
 
-/**
- * Compress image using Web Worker
- * @param {File} file - Image file to compress
- * @param {Object} options - Compression options
- * @returns {Promise<Blob>} Compressed image blob
- */
 export const compressImage = (file, options = {}) => {
   return new Promise((resolve, reject) => {
     const worker = new Worker("/workers/imageCompressor.worker.js");

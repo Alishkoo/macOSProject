@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Search, Filter, Loader } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { getGenres } from "../services/tmdb.service";
 import useDebounce from "../hooks/useDebounce";
 import useMovies from "../hooks/useMovies";
@@ -9,6 +10,7 @@ import MovieCard from "../components/MovieCard";
 const MoviesListPage = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { t } = useTranslation();
 
   const [genres, setGenres] = useState([]);
 
@@ -131,7 +133,7 @@ const MoviesListPage = () => {
                 type="text"
                 value={searchInput}
                 onChange={handleSearchChange}
-                placeholder="Search movies..."
+                placeholder={t("safari.movies.search")}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -142,14 +144,14 @@ const MoviesListPage = () => {
             {/* Genre Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Genre
+                {t("safari.movies.filters.genre")}
               </label>
               <select
                 value={genreFilter}
                 onChange={(e) => handleFilterChange("genre", e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">All Genres</option>
+                <option value="">{t("safari.movies.filters.allGenres")}</option>
                 {genres.map((genre) => (
                   <option key={genre.id} value={genre.id}>
                     {genre.name}
@@ -161,31 +163,39 @@ const MoviesListPage = () => {
             {/* Sort By */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Sort By
+                {t("safari.movies.filters.sortBy")}
               </label>
               <select
                 value={sortBy}
                 onChange={(e) => handleFilterChange("sort", e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="popularity.desc">Most Popular</option>
-                <option value="vote_average.desc">Highest Rated</option>
-                <option value="release_date.desc">Newest First</option>
-                <option value="release_date.asc">Oldest First</option>
+                <option value="popularity.desc">
+                  {t("safari.movies.sortOptions.popularity")}
+                </option>
+                <option value="vote_average.desc">
+                  {t("safari.movies.sortOptions.rating")}
+                </option>
+                <option value="release_date.desc">
+                  {t("safari.movies.sortOptions.newestFirst")}
+                </option>
+                <option value="release_date.asc">
+                  {t("safari.movies.sortOptions.oldestFirst")}
+                </option>
               </select>
             </div>
 
             {/* Year Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Release Year
+                {t("safari.movies.filters.releaseYear")}
               </label>
               <select
                 value={yearFilter}
                 onChange={(e) => handleFilterChange("year", e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">All Years</option>
+                <option value="">{t("safari.movies.filters.allYears")}</option>
                 {years.map((year) => (
                   <option key={year} value={year}>
                     {year}
@@ -206,7 +216,7 @@ const MoviesListPage = () => {
         {/* Error State */}
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
-            Error: {error}
+            {t("safari.movies.error", { message: error })}
           </div>
         )}
 
@@ -227,11 +237,14 @@ const MoviesListPage = () => {
                   disabled={page === 1}
                   className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Previous
+                  {t("safari.movies.pagination.previous")}
                 </button>
 
                 <span className="px-4 py-2 text-gray-700 font-roboto">
-                  Page {page} of {totalPages}
+                  {t("safari.movies.pagination.pageOf", {
+                    current: page,
+                    total: totalPages,
+                  })}
                 </span>
 
                 <button
@@ -239,14 +252,17 @@ const MoviesListPage = () => {
                   disabled={page >= totalPages}
                   className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Next
+                  {t("safari.movies.pagination.next")}
                 </button>
               </div>
             )}
 
             {/* Results Info */}
             <div className="text-center text-gray-600 font-roboto mt-4">
-              Showing {displayedMovies.length} of {movies.length} results
+              {t("safari.movies.pagination.showing", {
+                count: displayedMovies.length,
+                total: movies.length,
+              })}
             </div>
           </>
         )}

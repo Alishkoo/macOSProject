@@ -1,5 +1,6 @@
 import { Navbar, Welcome, Dock, LockScreen } from "#components";
 import { TerminalWindow, SafariWindow } from "#windows";
+import OfflineIndicator from "./components/OfflineIndicator.jsx";
 import { useEffect } from "react";
 import useAuthStore from "./store/auth.js";
 import gsap from "gsap";
@@ -25,6 +26,7 @@ const App = () => {
   return (
     <main>
       {!user && <LockScreen />}
+      <OfflineIndicator />
 
       <Navbar></Navbar>
       <Welcome></Welcome>

@@ -1,0 +1,138 @@
+{
+  "nav": {
+    "finder": "Finder",
+    "file": "File",
+    "edit": "Edit",
+    "view": "View",
+    "go": "Go",
+    "window": "Window",
+    "help": "Help",
+    "projects": "Projects",
+    "contact": "Contact",
+    "resume": "Resume",
+    "projectTitle": "Alibek's Project"
+  },
+  "welcome": {
+    "greeting": "Hey! I am Alibek",
+    "title": "Endterm",
+    "smallScreen": "This is designed for large screens! Hello from small screen :)"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Logout",
+    "guest": "Continue as Guest",
+    "email": "Email",
+    "password": "Password",
+    "repeatPassword": "Repeat Password",
+    "welcomeBack": "Welcome Back",
+    "createAccount": "Create Account",
+    "signInMessage": "Sign in to continue",
+    "signUpMessage": "Sign up to access your workspace",
+    "alreadyHaveAccount": "Already have an account?",
+    "dontHaveAccount": "Don't have an account?",
+    "loading": "Loading...",
+    "signedInAs": "Signed in as"
+  },
+  "profile": {
+    "uploadPhoto": "Upload Photo",
+    "uploading": "Uploading...",
+    "mergeFavorites": "Merge Favourites",
+    "merging": "Merging..."
+  },
+  "safari": {
+    "home": {
+      "hero": {
+        "title": "Welcome to TMDB Movies",
+        "subtitle": "Discover millions of movies, explore details, and save your favorites"
+      },
+      "features": {
+        "explore": {
+          "title": "Explore Movies",
+          "description": "Browse thousands of movies with detailed information, ratings, and reviews"
+        },
+        "filter": {
+          "title": "Filter & Search",
+          "description": "Find exactly what you're looking for with advanced filters and search"
+        },
+        "favorites": {
+          "title": "Save Favorites",
+          "description": "Create your personal collection of favorite movies to watch later"
+        }
+      },
+      "cta": "Start Exploring Movies",
+      "about": {
+        "title": "About TMDB Movies",
+        "description": "This application is powered by The Movie Database (TMDB) API, providing you with access to a vast collection of movie information including plots, cast, crew, ratings, and more."
+      }
+    },
+    "tabs": {
+      "home": "Home",
+      "movies": "Movies",
+      "favorites": "Favorites"
+    },
+    "movies": {
+      "search": "Search movies...",
+      "filters": {
+        "genre": "Genre",
+        "allGenres": "All Genres",
+        "sortBy": "Sort By",
+        "releaseYear": "Release Year",
+        "allYears": "All Years"
+      },
+      "sortOptions": {
+        "popularity": "Most Popular",
+        "rating": "Highest Rated",
+        "newestFirst": "Newest First",
+        "oldestFirst": "Oldest First"
+      },
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next",
+        "pageOf": "Page {{current}} of {{total}}",
+        "showing": "Showing {{count}} of {{total}} results"
+      },
+      "error": "Error: {{message}}"
+    },
+    "favoritesPage": {
+      "title": "My Favorites",
+      "noFavorites": "No favorites yet. Start adding movies you love!",
+      "count": "You have {{count}} favorite movie",
+      "countPlural": "You have {{count}} favorite movies",
+      "emptyState": "Start exploring movies and add them to your favorites!"
+    },
+    "search": "Search movies...",
+    "favorites": "Favorites",
+    "popular": "Popular",
+    "topRated": "Top Rated",
+    "upcoming": "Upcoming",
+    "noResults": "No results found",
+    "loading": "Loading...",
+    "addToFavorites": "Add to favorites",
+    "removeFromFavorites": "Remove from favorites",
+    "rating": "Rating",
+    "releaseDate": "Release Date",
+    "overview": "Overview"
+  },
+  "offline": {
+    "title": "You're Offline",
+    "message": "It looks like you've lost your internet connection",
+    "backOnline": "Back Online",
+    "tryAgain": "Try Again",
+    "availableOffline": "Available Offline",
+    "features": {
+      "pages": "Previously visited pages",
+      "posters": "Cached movie posters",
+      "favorites": "Your saved favorites",
+      "interface": "App interface"
+    }
+  },
+  "errors": {
+    "emailRequired": "Email is required",
+    "invalidEmail": "Invalid email format",
+    "passwordRequired": "Password is required",
+    "passwordWeak": "Password must contain at least 8 characters, one special character, and one number",
+    "passwordsDontMatch": "Passwords do not match",
+    "confirmPassword": "Please confirm your password"
+  }
+}

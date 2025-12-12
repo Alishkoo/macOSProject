@@ -2,16 +2,19 @@ const navLinks = [
   {
     id: 1,
     name: "Projects",
+    translationKey: "nav.projects",
     type: "finder",
   },
   {
     id: 3,
     name: "Contact",
+    translationKey: "nav.contact",
     type: "contact",
   },
   {
     id: 4,
     name: "Resume",
+    translationKey: "nav.resume",
     type: "resume",
   },
 ];

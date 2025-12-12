@@ -27,12 +27,11 @@ const WindowWrapper = (Component, windowKey) => {
       const el = ref.current;
       if (!el) return;
 
-      // Only make window draggable by header, not the entire window
       const header = el.querySelector("#window-header");
       if (!header) return;
 
       const [instance] = Draggable.create(el, {
-        trigger: header, // Only drag when grabbing the header
+        trigger: header,
         onPress() {
           focusWindow(windowKey);
         },

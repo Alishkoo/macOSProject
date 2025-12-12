@@ -1,8 +1,10 @@
 import { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import useFavorites from "../hooks/useFavorites";
 import MovieCard from "../components/MovieCard";
 
 const FavoritesPage = () => {
+  const { t } = useTranslation();
   // Use custom hook for favorites
   const { favorites, refreshFavorites } = useFavorites();
 
@@ -14,12 +16,12 @@ const FavoritesPage = () => {
   // useMemo for favorites count message
   const message = useMemo(() => {
     if (favorites.length === 0) {
-      return "No favorites yet. Start adding movies you love!";
+      return t("safari.favoritesPage.noFavorites");
     }
-    return `You have ${favorites.length} favorite movie${
-      favorites.length > 1 ? "s" : ""
-    }`;
-  }, [favorites.length]);
+    return favorites.length === 1
+      ? t("safari.favoritesPage.count", { count: favorites.length })
+      : t("safari.favoritesPage.countPlural", { count: favorites.length });
+  }, [favorites.length, t]);
 
   return (
     <div className="min-h-full bg-gray-50">
@@ -27,7 +29,7 @@ const FavoritesPage = () => {
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900 font-georama mb-2">
-            My Favorites
+            {t("safari.favoritesPage.title")}
           </h1>
           <p className="text-gray-600 font-roboto">{message}</p>
         </div>
@@ -46,7 +48,7 @@ const FavoritesPage = () => {
         ) : (
           <div className="bg-white rounded-lg shadow-md p-12 text-center">
             <p className="text-gray-500 text-lg font-roboto">
-              Start exploring movies and add them to your favorites!
+              {t("safari.favoritesPage.emptyState")}
             </p>
           </div>
         )}
